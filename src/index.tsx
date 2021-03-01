@@ -1,6 +1,7 @@
 import * as esbuild from 'esbuild-wasm';
 import ReactDOM from 'react-dom';
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect, useRef } from 'react';
+import { unpkgPathPlugin } from './plugins/unpkg-path-plugin'
 
 const App = () => {
   const serviceRef = useRef<any>()
@@ -25,11 +26,15 @@ const App = () => {
     if (!serviceRef.current) {
       return;
     }
-
-    const result = await serviceRef.current.transform(input, {
-      loader: 'jsx',
-      target: 'es2015'
+    // transfrom means transpile
+    const result = await serviceRef.current.build({
+      entryPoints: ['index.js'],
+      bundle: true,
+      write: false,
+      plugins: [unpkgPathPlugin()]
     });
+
+    console.log(result)
 
     setCode(result.code)
   }
